@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snow White — لوحة التحكم</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════ -->
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">SW</div>
+        <div>
+          <div class="brand-name">Snow White</div>
+          <div class="brand-sub">لوحة التحكم</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-section="products">
+          <span class="nav-icon">📦</span>
+          <span>المنتجات</span>
+        </button>
+        <button class="nav-item" data-section="add">
+          <span class="nav-icon">➕</span>
+          <span>إضافة منتج</span>
+        </button>
+        <button class="nav-item" data-section="categories">
+          <span class="nav-icon">🏷️</span>
+          <span>الفئات</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="firebase-status">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">جاري الاتصال...</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ═══════════════════════════════════════════
+         MAIN CONTENT
+    ═══════════════════════════════════════════ -->
+    <main class="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div>
+          <h1 class="page-title" id="page-title">المنتجات</h1>
+          <p class="page-sub" id="page-sub">إدارة مخزون المتجر</p>
+        </div>
+        <div class="topbar-actions">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="ابحث عن منتج..." />
+          </div>
+          <button class="btn-primary" id="btn-open-add">+ إضافة منتج</button>
+        </div>
+      </header>
+
+      <!-- ─── SECTION: PRODUCTS ─── -->
+      <section class="section active" id="section-products">
+
+        <!-- Stats Row -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value" id="stat-total">—</div>
+            <div class="stat-label">إجمالي المنتجات</div>
+          </div>
+          <div class="stat-card accent">
+            <div class="stat-value" id="stat-available">—</div>
+            <div class="stat-label">متوفر</div>
+          </div>
+          <div class="stat-card warn">
+            <div class="stat-value" id="stat-low">—</div>
+            <div class="stat-label">كمية منخفضة</div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-value" id="stat-out">—</div>
+            <div class="stat-label">نفذ المخزون</div>
+          </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs" id="filter-tabs">
+          <button class="filter-tab active" data-cat="all">الكل</button>
+        </div>
+
+        <!-- Products Table -->
+        <div class="table-wrapper">
+          <table class="products-table">
+            <thead>
+              <tr>
+                <th>المنتج</th>
+                <th>الفئة</th>
+                <th>السعر</th>
+                <th>الكمية</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="products-tbody">
+              <tr class="loading-row">
+                <td colspan="6">
+                  <div class="loading-spinner"></div>
+                  <span>جاري التحميل...</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ─── SECTION: ADD ─── -->
+      <section class="section" id="section-add">
+        <div class="form-page">
+          <div class="form-card">
+            <div class="form-card-header">
+              <h2>إضافة منتج جديد</h2>
+              <p>أدخل بيانات المنتج بدقة</p>
+            </div>
+            <div class="form-body" id="add-form-body">
+              <!-- rendered by JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── SECTION: CATEGORIES ─── -->
+      <section class="section" id="section-categories">
+        <div class="form-page">
+          <div class="form-card" style="max-width:520px">
+            <div class="form-card-header">
+              <h2>إدارة الفئات</h2>
+              <p>أضف أو احذف فئات المنتجات</p>
+            </div>
+            <div class="form-body">
+              <div class="field-group">
+                <label class="field-label">اسم الفئة الجديدة</label>
+                <div style="display:flex;gap:10px">
+                  <input class="field-input" type="text" id="new-cat-input" placeholder="مثال: عبايات" />
+                  <button class="btn-primary" onclick="addCategory()">إضافة</button>
+                </div>
+              </div>
+              <div class="cats-list" id="cats-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       EDIT MODAL
+  ═══════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">تعديل المنتج</h2>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TOAST
+  ═══════════════════════════════════════════ -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ═══════════════════════════════════════════
+       SCRIPTS
+  ═══════════════════════════════════════════ -->
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- App -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
